@@ -16,6 +16,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+import os
 from rest_framework import routers
 from .views import UserViewSet, TeamViewSet, ActivityViewSet, WorkoutViewSet, LeaderboardViewSet, api_root
 
@@ -30,4 +31,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('', api_root, name='api_root'),
+
+# Dynamically build the API root URL using the $CODESPACE_NAME environment variable
+codespace_name = os.environ.get('CODESPACE_NAME')
+if codespace_name:
+    api_root_url = f"https://{codespace_name}-8000.app.github.dev/api/"
+else:
+    api_root_url = "/api/"
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include('octofit_tracker.api_urls')),
 ]
